@@ -3,8 +3,9 @@ import sys
 import time
 from tkinter import *
 from tkinter import messagebox
-import math
+#import math
 Tk().wm_withdraw() #to hide the main window
+#before rendering go through the next board list and old list and find differences to make rendering faster
 #messagebox.showinfo()
 #todo fix prioritizing moving diagonal when should move in cardinal directions
 #believe it is seeing moving diagonal as 1 space moved
@@ -18,14 +19,14 @@ lightblue = (51,255,255)
 lightbluegreen = (51,255,153)
 red = (255,0,0)
 blue = (0,0,255)
-width = 10
-height = 10
-margin = 5
+width = 2
+height = 2
+margin = 1
 grid = []
 start = (0,0)
 end = (9,9)
-gridheight = 66
-gridwidth = 150
+gridheight = 330
+gridwidth = 750
 from random import seed
 from random import random
 # seed random number generator
@@ -62,15 +63,17 @@ def nextboard(array,myheight,mywidth):
     for x in range(myheight):
         for y in range(mywidth):
             num = numneighbors(array,x,y)
-            if (num == 2 or num == 3) and array[x][y] == 1:
-            #print("It lives")
-                b[x][y] = 1
-            elif num == 3 and array[x][y] == 0:
-            #print("It lives")
-                b[x][y] = 1
-            else:
-            #print("dies")
-                b[x][y] = 0
+            if array[x][y] == 1:	
+                if num == 2 or num == 3:
+                    #print("It lives")
+                    b[x][y] = 1
+                else:
+                    b[x][y] = 0
+            else:	
+                if num == 3:
+#print("It lives")
+                    b[x][y] = 1
+        #print("dies")
     
     return b
 
@@ -90,7 +93,7 @@ drawcount = 0
 while not done:
     if playing:
         print("doing things")
-        time.sleep(1)
+        #time.sleep(1)
         grid = nextboard(grid,gridheight,gridwidth)
  
     for event in pygame.event.get():
@@ -118,7 +121,7 @@ while not done:
                     print("stopped")
                 if playing:
                     print("doing things")
-                time.sleep(1)
+                #time.sleep(1)
                 grid = nextboard(grid,gridheight,gridwidth)
                     #renderboard(grid)
             if event.key == pygame.K_g:
@@ -134,12 +137,6 @@ while not done:
             color = white
             if grid[row][column] == 1:
                 color = black
-            if grid[row][column] == 2:
-                color = red
-            if grid[row][column] == 3:
-                color = lightbluegreen
-            if grid[row][column] == 4:
-                color = lightblue
             #if row == start[0] and column == start[1]:
             #    color = blue
             #if row==end[0] and column == end[1]:

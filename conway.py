@@ -4,7 +4,7 @@ import os
 #0 is dead 1 is alive
 #make second board with new states
 def init():
-    a = numpy.empty((10, 10))
+    a = numpy.empty((20, 20))
     a.fill(0)
     '''
     a[0][1] = 1
@@ -49,7 +49,7 @@ def numneighbors(grid,x_coord,y_coord):
                 result += 1
     return result
 def nextboard(array):
-    b = numpy.empty((10, 10))
+    b = numpy.empty((20, 20))
     b.fill(0)
     num = 0 
     for idx,x in numpy.ndenumerate(array):
@@ -71,7 +71,7 @@ def main():
     print(a)
     print('\n')
     while True:
-        time.sleep(1)
+        input()
         newboard = nextboard(a)
         os.system('cls')
         print(newboard)
