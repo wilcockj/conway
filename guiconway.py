@@ -10,8 +10,10 @@ Tk().wm_withdraw() #to hide the main window
 #todo fix prioritizing moving diagonal when should move in cardinal directions
 #believe it is seeing moving diagonal as 1 space moved
 #fix catching for no solution error
+
+pygame.init()
 playing = False
-window_size = [1920,1000]
+window_size = [1920,1080]
 black = (0,0,0)
 white = (255,255,255)
 green = (0,255,0)
@@ -27,6 +29,10 @@ start = (0,0)
 end = (9,9)
 gridheight = 330
 gridwidth = 750
+smallfont = pygame.font.SysFont('Corbel',35)
+#must make faster to make buttons more responsive also currently buttons are triggered only by position not mouse click
+text = smallfont.render('ToggleSim',True,(255,255,255))
+quit = smallfont.render('Quit',True,(255,255,255))
 from random import seed
 from random import random
 # seed random number generator
@@ -84,7 +90,6 @@ for row in range(gridheight):
     for column in range(gridwidth):
         grid[row].append(0)
 
-pygame.init()
 screen = pygame.display.set_mode(window_size)
 done = False
 clock = pygame.time.Clock()
@@ -97,6 +102,7 @@ while not done:
         grid = nextboard(grid,gridheight,gridwidth)
  
     for event in pygame.event.get():
+        pos = pygame.mouse.get_pos()
         if event.type == pygame.QUIT:
             print(drawcount)
             done = True
@@ -108,7 +114,6 @@ while not done:
                 if not (row == start[0] and column == start[1]):
                     grid[row][column] = 1
         elif pygame.mouse.get_pressed()[2]:
-            pos = pygame.mouse.get_pos()
             column = pos[0] // (width+margin)
             row = pos[1] // (height+margin)
             if row < gridheight and column < gridwidth:
@@ -131,7 +136,14 @@ while not done:
                             grid[row][column] = 1
     screen.fill(black)
 
-    
+    if playing:
+        pygame.draw.rect(screen,green,[40,1005,160,50])
+    elif not playing:
+        pygame.draw.rect(screen,red,[40,1005,160,50])
+    pygame.draw.rect(screen,blue,[300,1005,80,50])
+    if 40 <= pos[0] <= 200 and 1005 <= pos[1] <= 1055:
+        print("button pressed")
+        playing = not playing
     for row in range(gridheight):
         for column in range(gridwidth):
             color = white
@@ -148,5 +160,7 @@ while not done:
                             width,
                             height])
             drawcount+=1
+    screen.blit(text,(50,1010))
+    screen.blit(quit,(310,1010))
     clock.tick(60)
     pygame.display.flip()
