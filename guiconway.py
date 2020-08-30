@@ -21,15 +21,18 @@ lightblue = (51,255,255)
 lightbluegreen = (51,255,153)
 red = (255,0,0)
 blue = (0,0,255)
-width = 2
-height = 2
-margin = 1
 grid = []
 myblank = []
 start = (0,0)
 end = (9,9)
-gridheight = 330
-gridwidth = 750
+#want to have height always go down to 1000 and if square leave space on sides
+gridheight = 100
+gridwidth = 100
+height = int((800/gridheight))
+if height == 0:
+    height = 1
+width = height
+margin = 0
 smallfont = pygame.font.SysFont('Corbel',35)
 #must make faster to make buttons more responsive also currently buttons are triggered only by position not mouse click
 text = smallfont.render('ToggleSim',True,(255,255,255))
@@ -175,10 +178,10 @@ while not done:
                     for y in range(gridwidth):
                         grid[x][y] = 0
             if event.key == pygame.K_g:
-                for x in range(3):
-                    grid = addgun(grid,100*x,0)
-                for y in range(6):
-                    grid = addgun(grid,0,100*y)
+                for x in range(int(gridheight/30)):
+                    grid = addgun(grid,30*x,0)
+                for y in range(int(gridwidth/50)):
+                    grid = addgun(grid,0,50*y)
         '''
         elif pygame.mouse.get_pressed()[2]:
             column = pos[0] // (width+margin)
@@ -224,6 +227,6 @@ while not done:
     print("--- %s seconds to draw rects ---" % (time.time() - start_time))
     screen.blit(text,(50,1010))
     screen.blit(quit,(310,1010))
-    clock.tick(1)
+    clock.tick(60)
     pygame.display.update()
 pygame.quit()
