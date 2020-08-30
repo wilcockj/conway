@@ -1,5 +1,10 @@
 # Conway
 Very primitive implementation of Conway's Game of Life rules.
+Currently only made for a 1920x1080 screen setup. Will automatically go fullscreen on start/
 
-Currently 10x10 and a set start but may add a Gui in order to draw 
-a desired starting setup
+#Controls
+-Start sim - Space
+-Place random cells - R
+-Erase board - P
+-Place gosper gliders on screen (use with blank board) - G
+-Quit game - Q
