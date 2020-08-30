@@ -25,6 +25,7 @@ width = 2
 height = 2
 margin = 1
 grid = []
+myblank = []
 start = (0,0)
 end = (9,9)
 gridheight = 330
@@ -55,17 +56,18 @@ def renderboard(grid):
 def numneighbors(grid,x_coord,y_coord):
     result = 0
     for x,y in [(x_coord+i,y_coord+j) for i in (-1,0,1) for j in (-1,0,1) if i != 0 or j != 0]:
-        if 0 <= x < len(grid) and 0 <= y < len(grid[0]):
-            if grid[x][y] == 1:
-                result += 1
+        if 0 <= x < gridheight and 0 <= y < gridwidth:
+            result += grid[x][y]
     return result
-def nextboard(array,myheight,mywidth):
+def nextboard(myblank,array,myheight,mywidth):
+    heightrange = range(myheight)
+    widthrange = range(mywidth)
+    num = 0 
     b = []
     for x in range(myheight):
         b.append([])
         for y in range(mywidth):
             b[x].append(0)
-    num = 0 
     for x in range(myheight):
         for y in range(mywidth):
             num = numneighbors(array,x,y)
@@ -80,17 +82,56 @@ def nextboard(array,myheight,mywidth):
 #print("It lives")
                     b[x][y] = 1
         #print("dies")
-    
+
     return b
-
-
+def addgun(grid,x,y):
+    print(x,y)
+    grid[5+x][1+y] = 1
+    grid[5+x][2+y] = 1
+    grid[6+x][1+y] = 1
+    grid[6+x][2+y] = 1
+    grid[1+x][25+y] = 1
+    grid[2+x][23+y] = 1
+    grid[2+x][25+y] = 1
+    grid[3+x][13+y] = 1
+    grid[3+x][14+y] = 1
+    grid[3+x][21+y] = 1
+    grid[3+x][22+y] = 1
+    grid[4+x][12+y] = 1
+    grid[4+x][16+y] = 1
+    grid[4+x][21+y] = 1
+    grid[4+x][22+y] = 1
+    grid[5+x][11+y] = 1
+    grid[5+x][17+y] = 1
+    grid[5+x][21+y] = 1
+    grid[5+x][22+y] = 1
+    grid[6+x][11+y] = 1
+    grid[6+x][15+y] = 1
+    grid[6+x][17+y] = 1
+    grid[6+x][18+y] = 1
+    grid[6+x][23+y] = 1
+    grid[6+x][25+y] = 1
+    grid[7+x][11+y] = 1
+    grid[7+x][17+y] = 1
+    grid[7+x][25+y] = 1
+    grid[8+x][12+y] = 1
+    grid[8+x][16+y] = 1
+    grid[9+x][13+y] = 1
+    grid[9+x][14+y] = 1
+    grid[3+x][35+y] = 1
+    grid[3+x][36+y] = 1
+    grid[4+x][35+y] = 1
+    grid[4+x][36+y] = 1
+    return grid
 print("Initializing Game Board")
 for row in range(gridheight):   
     grid.append([])
+    myblank.append([])
     for column in range(gridwidth):
         grid[row].append(0)
+        myblank[row].append(0)
 
-screen = pygame.display.set_mode(window_size)
+screen = pygame.display.set_mode(window_size,pygame.FULLSCREEN)
 done = False
 clock = pygame.time.Clock()
 print("Starting Game")
@@ -99,41 +140,55 @@ while not done:
     if playing:
         print("doing things")
         #time.sleep(1)
-        grid = nextboard(grid,gridheight,gridwidth)
- 
+        start_time = time.time()
+        grid = nextboard(myblank,grid,gridheight,gridwidth)
+        print("--- %s seconds to do conway sim ---" % (time.time() - start_time))
     for event in pygame.event.get():
         pos = pygame.mouse.get_pos()
         if event.type == pygame.QUIT:
             print(drawcount)
             done = True
         elif pygame.mouse.get_pressed()[0]:
+            if 40 <= pos[0] <= 200 and 1005 <= pos[1] <= 1055:
+                print("button pressed")
+                playing = not playing
+            if 300 <= pos[0] <= 380 and 1005 <= pos[1] <= 1055:
+                pygame.quit()
             pos = pygame.mouse.get_pos()
             column = pos[0] // (width+margin)
             row = pos[1] // (height+margin)
             if row < gridheight and column < gridwidth:
                 if not (row == start[0] and column == start[1]):
                     grid[row][column] = 1
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_r:
+                for row in range(gridheight):
+                    for column in range(gridwidth):
+                        if random() > .5:
+                            grid[row][column] = 1
+            if event.key == pygame.K_g:
+                for x in range(3):
+                    grid = addgun(grid,100*x,0)
+                for y in range(6):
+                    grid = addgun(grid,0,100*y)
+        '''
         elif pygame.mouse.get_pressed()[2]:
             column = pos[0] // (width+margin)
             row = pos[1] // (height+margin)
             if row < gridheight and column < gridwidth:
                 if not (row == start[0] and column == start[1]):
                     grid[row][column] = 0
-        elif event.type == pygame.KEYDOWN:
+        '''
+
+        '''
             if event.key == pygame.K_SPACE:
                 playing = not playing
                 if not playing:
                     print("stopped")
                 if playing:
                     print("doing things")
-                #time.sleep(1)
                 grid = nextboard(grid,gridheight,gridwidth)
-                    #renderboard(grid)
-            if event.key == pygame.K_g:
-                for row in range(gridheight):
-                    for column in range(gridwidth):
-                        if random() > .5:
-                            grid[row][column] = 1
+        '''
     screen.fill(black)
 
     if playing:
@@ -141,9 +196,7 @@ while not done:
     elif not playing:
         pygame.draw.rect(screen,red,[40,1005,160,50])
     pygame.draw.rect(screen,blue,[300,1005,80,50])
-    if 40 <= pos[0] <= 200 and 1005 <= pos[1] <= 1055:
-        print("button pressed")
-        playing = not playing
+    start_time = time.time() 
     for row in range(gridheight):
         for column in range(gridwidth):
             color = white
@@ -160,7 +213,9 @@ while not done:
                             width,
                             height])
             drawcount+=1
+    print("--- %s seconds to draw rects ---" % (time.time() - start_time))
     screen.blit(text,(50,1010))
     screen.blit(quit,(310,1010))
-    clock.tick(60)
-    pygame.display.flip()
+    clock.tick(1)
+    pygame.display.update()
+pygame.quit()
