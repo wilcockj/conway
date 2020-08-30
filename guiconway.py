@@ -161,11 +161,19 @@ while not done:
                 if not (row == start[0] and column == start[1]):
                     grid[row][column] = 1
         elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                playing = not playing
             if event.key == pygame.K_r:
                 for row in range(gridheight):
                     for column in range(gridwidth):
                         if random() > .5:
                             grid[row][column] = 1
+            if event.key == pygame.K_q:
+                pygame.quit()
+            if event.key == pygame.K_p:
+                for x in range(gridheight):
+                    for y in range(gridwidth):
+                        grid[x][y] = 0
             if event.key == pygame.K_g:
                 for x in range(3):
                     grid = addgun(grid,100*x,0)
