@@ -3,6 +3,7 @@ import sys
 import time
 from tkinter import *
 from tkinter import messagebox
+from itertools import chain
 #import math
 Tk().wm_withdraw() #to hide the main window
 #before rendering go through the next board list and old list and find differences to make rendering faster
@@ -41,6 +42,41 @@ from random import seed
 from random import random
 # seed random number generator
 seed(1)
+def truncline(text, font, maxwidth):
+        real=len(text)       
+        stext=text           
+        l=font.size(text)[0]
+        cut=0
+        a=0                  
+        done=1
+        old = None
+        while l > maxwidth:
+            a=a+1
+            n=text.rsplit(None, a)[0]
+            if stext == n:
+                cut += 1
+                stext= n[:-cut]
+            else:
+                stext = n
+            l=font.size(stext)[0]
+            real=len(stext)               
+            done=0                        
+        return real, done, stext             
+        
+def wrapline(text, font, maxwidth): 
+    done=0                      
+    wrapped=[]                  
+                               
+    while not done:             
+        nl, done, stext=truncline(text, font, maxwidth) 
+        wrapped.append(stext.strip())                  
+        text=text[nl:]                                 
+    return wrapped
+def wrap_multi_line(text, font, maxwidth):
+        """ returns text taking new lines into account.
+        """
+        lines = chain(*(wrapline(line, font, maxwidth) for line in text.splitlines()))
+        return list(lines)
 def renderboard(grid):
     screen.fill(black)
     for row in range(gridheight):
@@ -126,6 +162,14 @@ def addgun(grid,x,y):
     grid[4+x][35+y] = 1
     grid[4+x][36+y] = 1
     return grid
+controls = wrap_multi_line('''Controls:
+        Press p to clear board
+        Press r to randomize board
+        Press g to add gosper gun to board (best when board is clear)
+        Press space or the toggle sim button to pause and play the simulator
+        Press q or the quit button to quit
+        Thanks for Playing
+        ''',smallfont,1200)
 print("Initializing Game Board")
 for row in range(gridheight):   
     grid.append([])
@@ -227,6 +271,9 @@ while not done:
     print("--- %s seconds to draw rects ---" % (time.time() - start_time))
     screen.blit(text,(50,1010))
     screen.blit(quit,(310,1010))
+    for x,y in enumerate(controls):
+        print(x)
+        screen.blit(smallfont.render(y,True,(255,255,255)),(850,50*x+50))
     clock.tick(60)
     pygame.display.update()
 pygame.quit()
